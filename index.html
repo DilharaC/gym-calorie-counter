@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>🍎 AI Calorie Counter - Gym Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  /* ---------- GLOBAL ---------- */
+  :root {
+    --green: #4CAF50;
+    --dark-bg: #121212;
+    --dark-card: #1E1E1E;
+    --light-bg: #f9f9f9;
+    --text-light: #fff;
+    --text-dark: #222;
+  }
+  body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background: var(--light-bg);
+    color: var(--text-dark);
+    transition: background 0.4s, color 0.4s;
+  }
+  h2, h3 { color: var(--green); }
+  h2 { margin-bottom: 10px; }
+  input, select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    outline: none;
+  }
+  input:focus, select:focus {
+    border-color: var(--green);
+  }
+  button {
+    padding: 8px 16px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: var(--green);
+    color: white;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  button:hover {
+    background: #3a9d44;
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    padding: 30px;
+  }
+
+  /* ---------- HEADER ---------- */
+  #toggle-theme {
+    float: right;
+    background: #222;
+    border-radius: 20px;
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+  #toggle-theme:hover {
+    background: #444;
+  }
+
+  /* ---------- TABLE ---------- */
+  table {
+    border-collapse: collapse;
+    margin-top: 20px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  th, td {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  th {
+    background-color: var(--green);
+    color: white;
+  }
+  tr:hover { background: #f3f3f3; }
+
+  /* ---------- PROGRESS ---------- */
+  progress {
+    width: 200px;
+    height: 15px;
+    border-radius: 6px;
+  }
+
+  #error { color: red; margin-top: 10px; }
+  #warnings { color: orange; margin-top: 10px; font-weight: bold; }
+  #food-nutrition { margin-top: 10px; font-weight: 600; }
+
+  /* ---------- WATER TRACKER ---------- */
+  #water {
+    margin-top: 30px;
+    background: #e8f5e9;
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  /* ---------- DARK MODE ---------- */
+  .dark {
+    background: var(--dark-bg);
+    color: var(--text-light);
+  }
+  .dark .container {
+    background: var(--dark-card);
+    color: var(--text-light);
+    box-shadow: 0 0 25px rgba(255,255,255,0.05);
+  }
+  .dark table th { background: #2e7d32; }
+  .dark table tr:hover { background: #1e1e1e; }
+  .dark input, .dark select {
+    background: #222;
+    color: white;
+    border: 1px solid #555;
+  }
+  .dark #water { background: #1b2b1b; }
+  
+  @media (max-width: 600px) {
+    body { font-size: 15px; }
+    table { font-size: 13px; }
+    button, input, select { width: 100%; margin-top: 5px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <button id="toggle-theme">🌙 Dark Mode</button>
+  <h2>💪 AI Calorie Counter - Gym Edition</h2>
+  <p>Track your meals, macronutrients, and water intake for your fitness goals.</p>
+
+  <!-- Food Input Section -->
+  <div id="food-form">
+    <input id="food" placeholder="Enter food name" list="food-list" />
+    <input id="grams" type="number" value="100" /> g
+    <select id="meal-type">
+      <option>Breakfast</option>
+      <option>Lunch</option>
+      <option>Dinner</option>
+      <option>Pre-Workout</option>
+      <option>Post-Workout</option>
+    </select>
+    <button id="search">Find</button>
+    <button id="add" disabled>Add to Table</button>
+  </div>
+
+  <datalist id="food-list"></datalist>
+  <div id="food-nutrition"></div>
+  <div id="error"></div>
+  <div id="warnings"></div>
+
+  <!-- Goals Section -->
+  <div id="goals">
+    <h3>🎯 Daily Goals</h3>
+    <p>
+      Calories: <input id="goal_calories" type="number" value="2800"> kcal &nbsp;
+      Protein: <input id="goal_protein" type="number" value="150"> g &nbsp;
+      Carbs: <input id="goal_carbs" type="number" value="300"> g &nbsp;
+      Fat: <input id="goal_fat" type="number" value="70"> g
+    </p>
+  </div>
+
+  <!-- Progress Bars -->
+  <div id="progress-bars">
+    <p>Calories: <progress id="calorie-bar" value="0" max="2800"></progress></p>
+    <p>Protein: <progress id="protein-bar" value="0" max="150"></progress></p>
+    <p>Carbs: <progress id="carb-bar" value="0" max="300"></progress></p>
+    <p>Fat: <progress id="fat-bar" value="0" max="70"></progress></p>
+  </div>
+
+  <button id="calculate">📊 Calculate Total</button>
+
+  <!-- Results Table -->
+  <table id="results" style="display:none;">
+    <thead>
+      <tr>
+        <th>Food</th><th>Grams</th><th>Type</th><th>Calories</th>
+        <th>Protein</th><th>Carbs</th><th>Fat</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr>
+        <th>Total</th><th></th><th></th>
+        <th id="total_calories"></th><th id="total_protein"></th>
+        <th id="total_carbs"></th><th id="total_fat"></th><th></th>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- Water Tracker -->
+  <div id="water">
+    <h3>💧 Water Tracker</h3>
+    <input id="water-input" type="number" value="0"> cups
+    <button id="add-water">Add</button>
+    <p id="water-total">Total: 0 cups</p>
+  </div>
+</div>
+
+<script>
+let foodsList = [];
+fetch('food_data.csv')
+  .then(res => res.text())
+  .then(data => {
+    const lines = data.split('\n').slice(1);
+    lines.forEach(line => {
+      const name = line.split(',')[0];
+      if (name) foodsList.push(name);
+    });
+    const datalist = document.getElementById('food-list');
+    foodsList.forEach(f => {
+      const option = document.createElement('option');
+      option.value = f;
+      datalist.appendChild(option);
+    });
+  });
+
+let meal = [];
+let currentFood = null;
+let totalWater = parseInt(localStorage.getItem('water') || 0);
+
+window.onload = () => {
+  const savedMeal = localStorage.getItem('meal');
+  if (savedMeal) {
+    meal = JSON.parse(savedMeal);
+    renderMealTable();
+  }
+  updateWater();
+};
+
+// Render meal table
+function renderMealTable() {
+  const tbody = document.querySelector('#results tbody');
+  tbody.innerHTML = '';
+  meal.forEach((item, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item.food}</td>
+      <td>${item.grams}</td>
+      <td>${item.type}</td>
+      <td>${item.calories}</td>
+      <td>${item.protein}</td>
+      <td>${item.carbs}</td>
+      <td>${item.fat}</td>
+      <td><button onclick="removeFood(${index})" style="background:#e53935">🗑️</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('results').style.display = meal.length ? 'table' : 'none';
+}
+
+// Remove food
+function removeFood(index) {
+  meal.splice(index, 1);
+  localStorage.setItem('meal', JSON.stringify(meal));
+  renderMealTable();
+}
+
+// Search food
+document.getElementById('search').onclick = async () => {
+  const food = document.getElementById('food').value.trim();
+  const grams = parseFloat(document.getElementById('grams').value);
+  if (!food || !grams) return;
+
+  const res = await fetch('/predict', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({foods: [{food, grams}]}),
+  });
+
+  const data = await res.json();
+  if (res.status !== 200 || !data.items || data.items.length === 0) {
+    document.getElementById('food-nutrition').textContent = data.error || 'Food not found.';
+    document.getElementById('add').disabled = true;
+    return;
+  }
+
+  const item = data.items[0];
+  currentFood = item;
+  document.getElementById('food-nutrition').innerHTML = `
+    <b>${item.food}</b> (${item.grams}g): 
+    Calories: ${item.calories}, Protein: ${item.protein}g, 
+    Carbs: ${item.carbs}g, Fat: ${item.fat}g
+  `;
+  document.getElementById('add').disabled = false;
+};
+
+// Add food
+document.getElementById('add').onclick = () => {
+  if (!currentFood) return;
+  const type = document.getElementById('meal-type').value;
+  currentFood.type = type;
+  meal.push(currentFood);
+  localStorage.setItem('meal', JSON.stringify(meal));
+  currentFood = null;
+  document.getElementById('food-nutrition').textContent = '';
+  document.getElementById('add').disabled = true;
+  document.getElementById('food').value = '';
+  document.getElementById('grams').value = 100;
+  renderMealTable();
+};
+
+// Calculate totals
+document.getElementById('calculate').onclick = async () => {
+  if (meal.length === 0) {
+    document.getElementById('error').textContent = "⚠️ Add at least one food!";
+    return;
+  }
+
+  const res = await fetch('/predict', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({foods: meal}),
+  });
+
+  const data = await res.json();
+  if (res.status !== 200) {
+    document.getElementById('error').textContent = data.error;
+    return;
+  }
+
+  document.getElementById('warnings').textContent = data.warnings.join(', ');
+  document.getElementById('total_calories').textContent = data.totals.total_calories;
+  document.getElementById('total_protein').textContent = data.totals.total_protein;
+  document.getElementById('total_carbs').textContent = data.totals.total_carbs;
+  document.getElementById('total_fat').textContent = data.totals.total_fat;
+
+  // Update progress bars
+  document.getElementById('calorie-bar').value = data.totals.total_calories;
+  document.getElementById('protein-bar').value = data.totals.total_protein;
+  document.getElementById('carb-bar').value = data.totals.total_carbs;
+  document.getElementById('fat-bar').value = data.totals.total_fat;
+
+  const goalCalories = parseFloat(document.getElementById('goal_calories').value);
+  const diff = goalCalories - data.totals.total_calories;
+  document.getElementById('warnings').textContent = 
+    diff > 0 ? `🔥 You need ${diff} more kcal to hit your goal.` :
+    `⚡ You exceeded your goal by ${Math.abs(diff)} kcal!`;
+};
+
+// Water tracker
+document.getElementById('add-water').onclick = () => {
+  const cups = parseInt(document.getElementById('water-input').value);
+  if (!isNaN(cups) && cups > 0) {
+    totalWater += cups;
+    localStorage.setItem('water', totalWater);
+    updateWater();
+  }
+};
+function updateWater() {
+  document.getElementById('water-total').textContent = `Total: ${totalWater} cups`;
+}
+
+// Dark mode toggle
+document.getElementById('toggle-theme').onclick = () => {
+  document.body.classList.toggle('dark');
+  const btn = document.getElementById('toggle-theme');
+  btn.textContent = document.body.classList.contains('dark')
+    ? '☀️ Light Mode'
+    : '🌙 Dark Mode';
+};
+</script>
+</body>
+</html>

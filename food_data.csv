@@ -1,0 +1,52 @@
+food_name,calories_100g,protein_100g,carbs_100g,fat_100g
+chicken breast,165,31,0,3.6
+beef steak,250,26,0,15
+pork chop,242,27,0,14
+lamb,258,25,0,17
+boiled egg,155,13,1.1,11
+fried egg,196,14,1.2,15
+egg white,52,11,0.7,0.2
+egg yolk,322,16,3.6,27
+white rice (cooked),130,2.4,28,0.3
+brown rice (cooked),112,2.6,23,0.9
+basmati rice (cooked),121,3.5,25,0.4
+bread (white),265,9,49,3.2
+bread (whole wheat),247,13,41,4.2
+oats,389,17,66,7
+pasta (cooked),131,5,25,1.1
+potato (boiled),87,1.9,20,0.1
+sweet potato,86,1.6,20,0.1
+banana,89,1.1,23,0.3
+apple,52,0.3,14,0.2
+orange,47,0.9,12,0.1
+mango,60,0.8,15,0.4
+pineapple,50,0.5,13,0.1
+watermelon,30,0.6,8,0.2
+strawberry,33,0.8,8,0.3
+peanut butter,588,25,20,50
+almonds,579,21,22,50
+cashew nuts,553,18,30,44
+walnuts,654,15,14,65
+sunflower seeds,584,21,20,51
+milk (whole),61,3.2,5,3.3
+milk (low fat),42,3.4,5,1
+cheddar cheese,402,25,1.3,33
+yogurt (plain),59,10,3.6,0.4
+butter,717,0.9,0.1,81
+olive oil,884,0,0,100
+fish (salmon),208,20,0,13
+fish (tuna),132,29,0,1
+shrimp,99,24,0.2,0.3
+chickpeas (boiled),164,9,27,2.6
+lentils (boiled),116,9,20,0.4
+kidney beans (boiled),127,9,22,0.5
+tofu,76,8,2,4.8
+soy milk,54,3.3,6,1.8
+broccoli,34,2.8,7,0.4
+carrot,41,0.9,10,0.2
+spinach,23,2.9,3.6,0.4
+cabbage,25,1.3,6,0.1
+tomato,18,0.9,3.9,0.2
+onion,40,1.1,9,0.1
+cucumber,16,0.7,3.6,0.1
+egg roti,220,6,30,7
